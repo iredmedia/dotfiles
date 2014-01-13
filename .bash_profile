@@ -12,9 +12,6 @@ alias h="history"
 alias off="out"
 alias fixgit="fix"
 
-# Git Autocomplete
-source ~/git-completion.bash
-
 # Navigate to Sites
 alias cds="cd ~/Sites/"
 
@@ -42,6 +39,9 @@ alias gdc="git diff --cached"
 # Tasks
 alias gt="gettask"
 alias st="settask"
+
+# Git Autocomplete
+source ~/git-completion.bash
 
 old_rebash () {
 	CURRENT_TASK=$TASK;

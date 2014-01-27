@@ -1,16 +1,20 @@
 # Bash
 alias vimbash="vim ~/.bash_profile"
 alias rebash="source ~/.bash_profile"
+alias ..="cd .."
 
 # General
 alias dr="docpad run"
 alias dg="docpad generate"
 alias cl="clear; pwd"
-alias l="ls -lpGS"
+alias l="ls -las"
 alias ls='l'
 alias h="history"
 alias off="out"
 alias fixgit="fix"
+
+# Git Autocomplete
+source ~/git-completion.bash
 
 # Navigate to Sites
 alias cds="cd ~/Sites/"
@@ -40,8 +44,10 @@ alias gdc="git diff --cached"
 alias gt="gettask"
 alias st="settask"
 
-# Git Autocomplete
-source ~/git-completion.bash
+gitInit() {
+	git init; 
+	git remote add origin https://github.com/iredmedia/$1.git;
+}
 
 old_rebash () {
 	CURRENT_TASK=$TASK;
@@ -68,7 +74,7 @@ gitgrep () {
 
 # Set current working task number
 settask () {
-        if [ $# -eq 1 ]; then
+    if [ $# -eq 1 ]; then
 		TASK=$1;
 	else
 		TASK=`getCommitMessage`;
@@ -104,10 +110,9 @@ getBranch () {
 
 # Get the commit message 'task #' delimiter
 getCommitMessage () {
-	IFS='/ ' read -a array <<< `getBranch`;
-	myBranch="${array[1]}";
-	IFS='- ' read -a array <<< ${myBranch};
-        echo "${array[0]}-${array[1]}";
+	currentBranch=$(getBranch);
+	IFS='- ' read -a array <<< ${currentBranch};
+    echo "${array[0]}-${array[1]}";
 }
 
 # Push to current working branch
@@ -139,7 +144,20 @@ get () {
             PROJECT=$1
     fi
 
-    git checkout $PROJECT && git pull origin $PROJECT && git fetch && ./composer.phar install --prefer-source --dev && binprep
+    # while test $# -gt 0; do
+    #     case "$1" in
+    #         -r|--run)
+    #             docpad='docpad run'
+    #             break
+    #             ;;
+    #         -g|--generate)
+    #             docpad='docpad generate'
+    #             break
+    #             ;;
+    #     esac
+    # done
+
+    git checkout $PROJECT && git pull origin $PROJECT && docpad generate  #&& `${docpad}`
 }
 
 # At set interval, repeatedly touch files
@@ -263,12 +281,20 @@ if [[ ! -x $(which fink) && -d /sw/bin ]];then
     source /sw/bin/init.sh
 fi
 
-PS1="\[\e[1;30m\]#!\!\e[m \[\e[1;33m\]\u\[\e[m\] in \[\e[1;33m\]\w\[\e[m\] on \[\e[1;33m\]\h\[\e[m\]
-\[\e[1;33m\]$\[\e[m\] "
+# Default
+PS1="\[\e[1;30m\]#!\!\e[m \[\e[1;33m\]\u\[\e[m\] in \[\e[1;33m\]\w\[\e[m\] on \[\e[1;33m\]\h\[\e[m\] \`if [ \$? = 0 ]; then echo -e '\[\e[01;33m\]\n\xE2\x98\xBA'; else echo -e '\[\e[01;31m\]\n\xE2\x98\xB9'; fi\` \[\e[01;34m\]\[\e[00m\]"
+
+# Smiley
+# PS1="\w \`if [ \$? = 0 ]; then echo -e '\[\e[01;32m\]\n\xE2\x98\xBA'; else echo -e '\[\e[01;31m\]\n\xE2\x98\xB9'; fi\` \[\e[01;34m\]\[\e[00m\]"
+
+# Smiley 2 (\w is the cwd, \$ is ??)
+# PS1="\w \`if [ \$? = 0 ]; then echo -e '\[\e[01;32m\]\n\xE2\x98\xBA'; else echo -e '\[\e[01;31m\]\n\xE2\x98\xB9'; fi\` \[\e[01;34m\]\[\e[00m\]"
+
+# PS1="echo -e '\[\e[01;31m\]\n\xE2\x98\xB9'"
 
 # Initialize
 git config --global color.ui true;
-cds; cd neompd 
+cds; cd neompd
 clear;
 git status;
 
